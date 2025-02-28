@@ -44,6 +44,10 @@ jobs:
         run: flyctl deploy --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      - name: Github context
+        env:
+          CONTEXT: ${{toJson(github)}}
+        run: echo "$CONTEXT"
   tag_release:
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-20.04
