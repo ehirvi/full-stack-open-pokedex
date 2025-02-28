@@ -48,10 +48,14 @@ jobs:
         env:
           CONTEXT: ${{toJson(github.env)}}
         run: echo "$CONTEXT"
+      - name: Actions variables
+        env:
+          CONTEXT: ${{toJson(env)}}
+        run: echo "$CONTEXT"
   tag_release:
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-20.04
-    if: ${{ github.event_name == 'push' && env.SKIP_DEPLOY_AND_TAG == 'false' }}
+    if: ${{ github.event_name == 'push' && github.env.SKIP_DEPLOY_AND_TAG == 'false' }}
     steps:
       - uses: actions/checkout@v4
       - name: Bump version and push tag
