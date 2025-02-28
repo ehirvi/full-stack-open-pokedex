@@ -1,8 +1,5 @@
 name: Deployment pipeline
 
-env:
-  SKIP_DEPLOY_AND_TAG: ${{ contains(join(toJson(github.event.commits.*.message)), '#skip') }}
-
 on:
   push:
     branches:
@@ -10,6 +7,9 @@ on:
   pull_request:
     branches: [main]
     types: [opened, synchronize]
+
+env:
+  SKIP_DEPLOY_AND_TAG: ${{ contains(join(toJson(github.event.commits.*.message)), '#skip') }}
 
 jobs:
   simple_deployment_pipeline:
@@ -44,14 +44,6 @@ jobs:
         run: flyctl deploy --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-      - name: Github context
-        env:
-          CONTEXT: ${{toJson(github.env)}}
-        run: echo "$CONTEXT"
-      - name: Actions variables
-        env:
-          CONTEXT: ${{toJson(env)}}
-        run: echo "$CONTEXT"
   tag_release:
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-20.04
