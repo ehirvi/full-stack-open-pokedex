@@ -40,17 +40,17 @@ jobs:
           retention-days: 30
       - uses: superfly/flyctl-actions/setup-flyctl@master
       - name: Deploy to fly.io
-        if: env.DEPLOY_AND_TAG == 'true'
+        if: ${{ env.DEPLOY_AND_TAG == 'true' }}
         run: flyctl deploy --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
   tag_release:
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-20.04
-    if: env.DEPLOY_AND_TAG == 'true'
     steps:
       - uses: actions/checkout@v4
       - name: Bump version and push tag
+        if: ${{ env.DEPLOY_AND_TAG == 'true' }}
         uses: anothrNick/github-tag-action@1.71.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
