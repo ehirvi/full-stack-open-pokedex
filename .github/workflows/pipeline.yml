@@ -9,7 +9,7 @@ on:
     types: [opened, synchronize]
 
 env:
-  SKIP_DEPLOY_AND_TAG: ${{ contains(join(toJson(github.event.commits.*.message)), '#skip') }}
+  DEPLOY_AND_TAG: ${{ github.event_name == 'push' && contains(join(toJson(github.event.commits.*.message)), '#skip') == 'false' }}
 
 jobs:
   simple_deployment_pipeline:
@@ -40,14 +40,14 @@ jobs:
           retention-days: 30
       - uses: superfly/flyctl-actions/setup-flyctl@master
       - name: Deploy to fly.io
-        if: ${{ github.event_name == 'push' && env.SKIP_DEPLOY_AND_TAG == 'false' }}
+        if: ${{ env.DEPLOY_AND_TAG == 'true' }}
         run: flyctl deploy --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
   tag_release:
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-20.04
-    if: ${{ github.event_name == 'push' && github.env.SKIP_DEPLOY_AND_TAG == 'false' }}
+    if: ${{ github.env.DEPLOY_AND_TAG == 'true' }}
     steps:
       - uses: actions/checkout@v4
       - name: Bump version and push tag
